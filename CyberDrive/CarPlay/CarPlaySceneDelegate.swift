@@ -26,7 +26,7 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
 
         let mapTemplate = CPMapTemplate()
         self.mapTemplate = mapTemplate
-        mapTemplate.delegate = self
+        mapTemplate.mapDelegate = self
         mapTemplate.automaticallyHidesNavigationBar = false
         mapTemplate.guidanceBackgroundColor = NeonPalette.background
 
