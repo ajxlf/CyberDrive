@@ -31,6 +31,14 @@ The project is configured around XcodeGen because you do not have a Mac. The Git
 
 Map tiles use the public OpenFreeMap service, which provides OpenStreetMap-derived vector data without an API key. Review OpenFreeMap and OpenStreetMap attribution and usage requirements before putting the app into wider distribution.
 
+## Simulator testing
+
+The repository includes a `Simulator Smoke Test` GitHub Actions workflow. It builds CyberDrive on a hosted macOS runner, selects an available iPhone Simulator, grants location access, sets the simulated position to central London, launches the app, captures a screenshot, and uploads the screenshot and recent app logs as workflow artifacts.
+
+Open **Actions → Simulator Smoke Test → the latest run → Artifacts → cyberdrive-simulator-test**.
+
+The workflow uses Apple's `xcodebuild` and `simctl` command-line tools. Apple documents `simctl` as the command-line interface for managing Simulator and documents screenshot capture with `xcrun simctl io booted screenshot`. citeturn500440search7turn500440search0
+
 ## Current scope
 
 This is the first complete personal-use implementation. It deliberately avoids the complexity of a full commercial navigation stack such as traffic prediction, sophisticated automatic rerouting, lane-level guidance, offline worldwide maps, or vehicle instrumentation. Those can be added later without replacing the basic architecture.
