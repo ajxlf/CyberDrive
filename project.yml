@@ -23,6 +23,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.ajxlf.CyberDrive
         PRODUCT_NAME: CyberDrive
+        EXECUTABLE_NAME: CyberDrive
         SWIFT_VERSION: "5.10"
         TARGETED_DEVICE_FAMILY: "1"
         INFOPLIST_FILE: CyberDrive/Resources/Info.plist
@@ -34,6 +35,7 @@ targets:
         SWIFT_EMIT_LOC_STRINGS: YES
         SUPPORTS_MACCATALYST: NO
         UI_USER_INTERFACE_IDIOM: phone
+        LSRequiresIPhoneOS: YES
         GENERATE_INFOPLIST_FILE: NO
       configs:
         Debug:
