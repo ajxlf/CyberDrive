@@ -3,7 +3,7 @@ import MapLibre
 import UIKit
 
 @MainActor
-final class CyberMapViewController: UIViewController, MLNMapViewDelegate {
+final class CyberMapViewController: UIViewController, @preconcurrency MLNMapViewDelegate {
     let mapView: MLNMapView
 
     private let locationManager: LocationManager
