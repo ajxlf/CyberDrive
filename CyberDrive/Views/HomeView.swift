@@ -79,7 +79,7 @@ struct HomeView: View {
                                 .lineLimit(1)
                             Text(result.subtitle)
                                 .font(.system(size: 11, design: .monospaced))
-                                .foregroundStyle(Color(uiColor: NeonPalette.dimText)
+                                .foregroundStyle(Color(uiColor: NeonPalette.dimText))
                                 .lineLimit(1)
                         }
                         Spacer()
