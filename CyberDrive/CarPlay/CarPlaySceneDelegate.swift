@@ -4,7 +4,7 @@ import MapKit
 import UIKit
 
 @MainActor
-final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
+final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate, CPMapTemplateDelegate {
     private let navigation = NavigationCoordinator.shared
     private let guidance = NavigationGuidance()
     private var interfaceController: CPInterfaceController?
