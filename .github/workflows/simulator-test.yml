@@ -1,0 +1,144 @@
+name: Simulator Smoke Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  simulator-smoke-test:
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Select an iPhone simulator
+        id: simulator
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          DEVICE_ID="$(
+            python3 - <<'PY'
+          import json
+          import subprocess
+          import sys
+
+          data = json.loads(subprocess.check_output(["xcrun", "simctl", "list", "devices", "available", "-j"]))
+          preferred = []
+          fallback = []
+
+          for runtime_devices in data["devices"].values():
+              for device in runtime_devices:
+                  if device.get("isAvailable") is not True:
+                      continue
+                  if device.get("name") == "iPhone 16 Pro":
+                      preferred.append(device["udid"])
+                  elif device.get("name", "").startswith("iPhone"):
+                      fallback.append(device["udid"])
+
+          candidates = preferred or fallback
+          if not candidates:
+              print("No available iPhone simulator found.", file=sys.stderr)
+              sys.exit(1)
+
+          print(candidates[0])
+          PY
+          )"
+
+          echo "udid=$DEVICE_ID" >> "$GITHUB_OUTPUT"
+          echo "Using simulator: $DEVICE_ID"
+
+      - name: Build CyberDrive for simulator
+        env:
+          DEVICE_ID: ${{ steps.simulator.outputs.udid }}
+        run: |
+          set -euo pipefail
+
+          xcodebuild \
+            -project CyberDrive.xcodeproj \
+            -scheme CyberDrive \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=$DEVICE_ID" \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Boot simulator
+        env:
+          DEVICE_ID: ${{ steps.simulator.outputs.udid }}
+        run: |
+          set -euo pipefail
+
+          xcrun simctl boot "$DEVICE_ID" || true
+          xcrun simctl bootstatus "$DEVICE_ID" -b
+
+      - name: Configure simulator
+        env:
+          DEVICE_ID: ${{ steps.simulator.outputs.udid }}
+        run: |
+          set -euo pipefail
+
+          xcrun simctl ui "$DEVICE_ID" appearance dark
+          xcrun simctl privacy "$DEVICE_ID" grant location com.ajxlf.CyberDrive
+          xcrun simctl location "$DEVICE_ID" set 51.5074,-0.1278
+
+      - name: Install CyberDrive
+        env:
+          DEVICE_ID: ${{ steps.simulator.outputs.udid }}
+        run: |
+          set -euo pipefail
+
+          APP_PATH="build/DerivedData/Build/Products/Debug-iphonesimulator/CyberDrive.app"
+          test -d "$APP_PATH"
+          xcrun simctl install "$DEVICE_ID" "$APP_PATH"
+
+      - name: Launch CyberDrive
+        id: launch
+        continue-on-error: true
+        env:
+          DEVICE_ID: ${{ steps.simulator.outputs.udid }}
+        run: |
+          set -euo pipefail
+          xcrun simctl launch --console "$DEVICE_ID" com.ajxlf.CyberDrive
+          sleep 12
+
+      - name: Capture simulator screenshot
+        if: always()
+        env:
+          DEVICE_ID: ${{ steps.simulator.outputs.udid }}
+        run: |
+          mkdir -p artifacts
+          xcrun simctl io "$DEVICE_ID" screenshot artifacts/cyberdrive-simulator.png
+
+      - name: Capture CyberDrive simulator logs
+        if: always()
+        env:
+          DEVICE_ID: ${{ steps.simulator.outputs.udid }}
+        run: |
+          xcrun simctl spawn "$DEVICE_ID" log show \
+            --last 2m \
+            --style compact \
+            --predicate 'process == "CyberDrive"' \
+            > artifacts/cyberdrive-simulator.log || true
+
+      - name: Upload simulator artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cyberdrive-simulator-test
+          path: artifacts/
+          if-no-files-found: warn
+
+      - name: Fail if launch failed
+        if: steps.launch.outcome == 'failure'
+        run: |
+          echo "CyberDrive failed to launch in the iPhone Simulator."
+          exit 1
