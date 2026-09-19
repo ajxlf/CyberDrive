@@ -37,7 +37,7 @@ The repository includes a `Simulator Smoke Test` GitHub Actions workflow. It bui
 
 Open **Actions → Simulator Smoke Test → the latest run → Artifacts → cyberdrive-simulator-test**.
 
-The workflow uses Apple's `xcodebuild` and `simctl` command-line tools. Apple documents `simctl` as the command-line interface for managing Simulator and documents screenshot capture with `xcrun simctl io booted screenshot`. citeturn500440search7turn500440search0
+The workflow uses Apple's `xcodebuild` and `simctl` command-line tools. Apple documents `simctl` as the command-line interface for managing Simulator and documents screenshot capture with `xcrun simctl io booted screenshot`.
 
 ## Current scope
 
