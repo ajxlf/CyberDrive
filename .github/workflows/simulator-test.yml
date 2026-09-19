@@ -121,7 +121,8 @@ jobs:
           DEVICE_ID: ${{ steps.simulator.outputs.udid }}
         run: |
           set -euo pipefail
-          xcrun simctl launch --console "$DEVICE_ID" com.ajxlf.CyberDrive
+
+          xcrun simctl launch "$DEVICE_ID" com.ajxlf.CyberDrive
           sleep 12
 
       - name: Capture simulator screenshot
