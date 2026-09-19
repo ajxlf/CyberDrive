@@ -4,7 +4,7 @@ import MapKit
 import UIKit
 
 @MainActor
-final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate, CPMapTemplateDelegate {
+final class CarPlaySceneDelegate: UIResponder, @preconcurrency CPTemplateApplicationSceneDelegate, @preconcurrency CPMapTemplateDelegate {
     private let navigation = NavigationCoordinator.shared
     private let guidance = NavigationGuidance()
     private var interfaceController: CPInterfaceController?
@@ -122,7 +122,7 @@ private final class SearchDelegateHolder {
 }
 
 @MainActor
-private final class CarPlaySearchDelegate: NSObject, CPSearchTemplateDelegate {
+private final class CarPlaySearchDelegate: NSObject, @preconcurrency CPSearchTemplateDelegate {
     private let navigation: NavigationCoordinator
     private let onSelect: (MKMapItem) -> Void
 
