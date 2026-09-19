@@ -34,7 +34,7 @@ final class CyberMapViewController: UIViewController, MLNMapViewDelegate {
         mapView.delegate = self
         mapView.attributionButton.isHidden = false
         mapView.allowsRotating = false
-        mapView.pitchEnabled = true
+        mapView.isPitchEnabled = true
         mapView.prefetchesTiles = true
         mapView.minimumZoomLevel = 3
         mapView.maximumZoomLevel = 20
@@ -61,7 +61,7 @@ final class CyberMapViewController: UIViewController, MLNMapViewDelegate {
     func recenter() {
         guard let location = locationManager.location else { return }
         followsHeading = true
-        mapView.setCenterCoordinate(location.coordinate, zoomLevel: 17, direction: locationManager.heading, animated: true)
+        mapView.setCenter(location.coordinate, zoomLevel: 17, direction: locationManager.heading, animated: true)
     }
 
     func followHeading(_ enabled: Bool) {
@@ -71,12 +71,12 @@ final class CyberMapViewController: UIViewController, MLNMapViewDelegate {
     private func update(location: CLLocation) {
         updatePlayerAnnotation(location.coordinate)
         guard followsHeading else { return }
-        mapView.setCenterCoordinate(location.coordinate, zoomLevel: max(mapView.zoomLevel, 16.5), direction: locationManager.heading, animated: true)
+        mapView.setCenter(location.coordinate, zoomLevel: max(mapView.zoomLevel, 16.5), direction: locationManager.heading, animated: true)
     }
 
     private func update(heading: CLLocationDirection) {
         guard let location = locationManager.location, followsHeading else { return }
-        mapView.setCenterCoordinate(location.coordinate, zoomLevel: max(mapView.zoomLevel, 16.5), direction: heading, animated: true)
+        mapView.setCenter(location.coordinate, zoomLevel: max(mapView.zoomLevel, 16.5), direction: heading, animated: true)
     }
 
     private func updatePlayerAnnotation(_ coordinate: CLLocationCoordinate2D) {
@@ -131,7 +131,7 @@ final class CyberMapViewController: UIViewController, MLNMapViewDelegate {
     func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
         didLoadStyle = true
         let coordinate = locationManager.location?.coordinate ?? CLLocationCoordinate2D(latitude: 51.5074, longitude: -0.1278)
-        mapView.setCenterCoordinate(coordinate, zoomLevel: 15, direction: 0, animated: false)
+        mapView.setCenter(coordinate, zoomLevel: 15, direction: 0, animated: false)
         updateRoute(NavigationCoordinator.shared.route)
         if let location = locationManager.location {
             updatePlayerAnnotation(location.coordinate)
