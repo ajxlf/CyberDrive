@@ -1,6 +1,7 @@
 import Combine
 import CoreLocation
 import MapKit
+import CarPlay
 
 @MainActor
 final class NavigationCoordinator: ObservableObject {
