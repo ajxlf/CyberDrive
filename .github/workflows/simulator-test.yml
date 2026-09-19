@@ -62,14 +62,29 @@ jobs:
         run: |
           set -euo pipefail
 
-          xcodebuild \
-            -project CyberDrive.xcodeproj \
-            -scheme CyberDrive \
-            -configuration Debug \
-            -destination "platform=iOS Simulator,id=$DEVICE_ID" \
-            -derivedDataPath build/DerivedData \
-            CODE_SIGNING_ALLOWED=NO \
-            build
+          xcodebuild             -project CyberDrive.xcodeproj             -scheme CyberDrive             -configuration Debug             -destination "platform=iOS Simulator,id=$DEVICE_ID"             -derivedDataPath build/DerivedData             CODE_SIGNING_ALLOWED=NO             build
+
+      - name: Validate built app bundle
+        run: |
+          set -euo pipefail
+
+          APP_PATH="build/DerivedData/Build/Products/Debug-iphonesimulator/CyberDrive.app"
+          PLIST="$APP_PATH/Info.plist"
+
+          test -d "$APP_PATH"
+          test -f "$PLIST"
+
+          EXECUTABLE=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$PLIST")
+          BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$PLIST")
+
+          echo "CFBundleExecutable=$EXECUTABLE"
+          echo "CFBundleIdentifier=$BUNDLE_ID"
+
+          test -n "$EXECUTABLE"
+          test "$EXECUTABLE" = "CyberDrive"
+          test -x "$APP_PATH/$EXECUTABLE"
+
+          file "$APP_PATH/$EXECUTABLE"
 
       - name: Boot simulator
         env:
@@ -97,7 +112,6 @@ jobs:
           set -euo pipefail
 
           APP_PATH="build/DerivedData/Build/Products/Debug-iphonesimulator/CyberDrive.app"
-          test -d "$APP_PATH"
           xcrun simctl install "$DEVICE_ID" "$APP_PATH"
 
       - name: Launch CyberDrive
@@ -123,11 +137,7 @@ jobs:
         env:
           DEVICE_ID: ${{ steps.simulator.outputs.udid }}
         run: |
-          xcrun simctl spawn "$DEVICE_ID" log show \
-            --last 2m \
-            --style compact \
-            --predicate 'process == "CyberDrive"' \
-            > artifacts/cyberdrive-simulator.log || true
+          xcrun simctl spawn "$DEVICE_ID" log show             --last 2m             --style compact             --predicate 'process == "CyberDrive"'             > artifacts/cyberdrive-simulator.log || true
 
       - name: Upload simulator artifacts
         if: always()
