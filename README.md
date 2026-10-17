@@ -1,6 +1,6 @@
 # CyberDrive
 
-CyberDrive is a personal Cyberpunk-style navigation app for iPhone + Apple CarPlay.
+CyberDrive is a personal Cyberpunk-style navigation app for iPhone + Apple CarPlay. Created for the purpose of improving my workflow and productivity through AI-Assistance.
 
 The app intentionally does not modify Apple Maps, Google Maps, or Waze. It is its own navigation app that uses CarPlay's navigation scene and draws a custom map underneath Apple's CarPlay navigation UI.
 
